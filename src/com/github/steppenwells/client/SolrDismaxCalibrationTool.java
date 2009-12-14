@@ -1,6 +1,7 @@
 package com.github.steppenwells.client;
 
 import com.github.steppenwells.client.model.DismaxField;
+import com.github.steppenwells.client.ui.DismaxFieldControl;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -17,6 +18,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,10 +39,15 @@ public class SolrDismaxCalibrationTool implements EntryPoint {
   private final SolrServiceAsync solrService = GWT.create(SolrService.class);
   private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
 
+  private final List<DismaxFieldControl> fieldControls = new ArrayList<DismaxFieldControl>();
+
   /**
    * This is the entry point method.
    */
   public void onModuleLoad() {
+
+      final VerticalPanel fieldsPanel = new VerticalPanel();
+
       
       solrService.getFields(new AsyncCallback<List<DismaxField>>() {
           @Override
@@ -50,10 +57,19 @@ public class SolrDismaxCalibrationTool implements EntryPoint {
 
           @Override
           public void onSuccess(List<DismaxField> dismaxFields) {
-              //To change body of implemented methods use File | Settings | File Templates.
+              for(DismaxField dismaxField : dismaxFields) {
+                  DismaxFieldControl dismaxFieldControl = new DismaxFieldControl(dismaxField);
+                  fieldControls.add(dismaxFieldControl);
+                  System.out.println("created control for " + dismaxField.getFieldName());
+
+                  System.out.println("adding control");
+                  fieldsPanel.add(dismaxFieldControl);
+              }
           }
       });
-      
+
+      RootPanel.get("fieldsContainer").add(fieldsPanel);
+
 //    final Button sendButton = new Button("Send");
 //    final TextBox nameField = new TextBox();
 //    nameField.setText("GWT User");

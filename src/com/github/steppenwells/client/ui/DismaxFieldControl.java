@@ -45,6 +45,9 @@ public class DismaxFieldControl extends Composite {
                 }
             }
         });
+        panel.add(weightTextBox);
+
+        initWidget(panel);
 
     }
 

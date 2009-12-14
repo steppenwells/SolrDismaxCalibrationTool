@@ -1,11 +1,17 @@
 package com.github.steppenwells.client.model;
 
+import java.io.Serializable;
 
-public class DismaxField {
+
+public class DismaxField implements Serializable {
 
     private String fieldName;
     private double weight;
     private boolean inUse;
+
+    public DismaxField() {
+        // for GWT
+    }
 
     public DismaxField(String fieldName, double weight, boolean inUse) {
         this.fieldName = fieldName;
