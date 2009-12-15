@@ -10,7 +10,7 @@ import java.util.List;
 public class SolrServiceImpl extends RemoteServiceServlet implements SolrService {
 
     @Override
-    public List<DismaxField> getFields() {
+    public List<DismaxField> getFields(String solrUrl) {
         //TODO work out what the fields are properly, currently hard coded to newspaper example
 
         List<DismaxField> fields = new ArrayList<DismaxField>();

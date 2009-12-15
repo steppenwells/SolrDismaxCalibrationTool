@@ -10,13 +10,7 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,50 +19,48 @@ import java.util.List;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class SolrDismaxCalibrationTool implements EntryPoint {
-  /**
-   * The message displayed to the user when the server cannot be reached or
-   * returns an error.
-   */
-  private static final String SERVER_ERROR = "An error occurred while "
-      + "attempting to contact the server. Please check your network "
-      + "connection and try again.";
+    /**
+     * The message displayed to the user when the server cannot be reached or
+     * returns an error.
+     */
+    private static final String SERVER_ERROR = "An error occurred while "
+            + "attempting to contact the server. Please check your network "
+            + "connection and try again.";
 
-  /**
-   * Create a remote service proxy to talk to the server-side Greeting service.
-   */
-  private final SolrServiceAsync solrService = GWT.create(SolrService.class);
-  private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
+    /**
+     * Create a remote service proxy to talk to the server-side Greeting service.
+     */
+    private final SolrServiceAsync solrService = GWT.create(SolrService.class);
 
-  private final List<DismaxFieldControl> fieldControls = new ArrayList<DismaxFieldControl>();
+    private TextBox solrServerUrlEntryField;
+    private final List<DismaxFieldControl> fieldControls = new ArrayList<DismaxFieldControl>();
 
-  /**
-   * This is the entry point method.
-   */
-  public void onModuleLoad() {
+    private VerticalPanel fieldsPanel;
+    private VerticalPanel graphPanel;
+    private VerticalPanel resultsPanel;
 
-      final VerticalPanel fieldsPanel = new VerticalPanel();
+    /**
+     * This is the entry point method.
+     */
+    public void onModuleLoad() {
 
-      
-      solrService.getFields(new AsyncCallback<List<DismaxField>>() {
-          @Override
-          public void onFailure(Throwable throwable) {
-              //To change body of implemented methods use File | Settings | File Templates.
-          }
+        final VerticalPanel toolLayoutPanel = new VerticalPanel();
 
-          @Override
-          public void onSuccess(List<DismaxField> dismaxFields) {
-              for(DismaxField dismaxField : dismaxFields) {
-                  DismaxFieldControl dismaxFieldControl = new DismaxFieldControl(dismaxField);
-                  fieldControls.add(dismaxFieldControl);
-                  System.out.println("created control for " + dismaxField.getFieldName());
+        HorizontalPanel solrUrlPanel = createSolrUrlPanel();
+        toolLayoutPanel.add(solrUrlPanel);
 
-                  System.out.println("adding control");
-                  fieldsPanel.add(dismaxFieldControl);
-              }
-          }
-      });
+        fieldsPanel = new VerticalPanel();
+        graphPanel = new VerticalPanel();
+        resultsPanel = new VerticalPanel();
 
-      RootPanel.get("fieldsContainer").add(fieldsPanel);
+        HorizontalPanel calibrationControls = new HorizontalPanel();
+        calibrationControls.add(fieldsPanel);
+        calibrationControls.add(graphPanel);
+        toolLayoutPanel.add(calibrationControls);
+
+        toolLayoutPanel.add(resultsPanel);
+
+        RootPanel.get("fieldsContainer").add(toolLayoutPanel);
 
 //    final Button sendButton = new Button("Send");
 //    final TextBox nameField = new TextBox();
@@ -165,5 +157,46 @@ public class SolrDismaxCalibrationTool implements EntryPoint {
 //    MyHandler handler = new MyHandler();
 //    sendButton.addClickHandler(handler);
 //    nameField.addKeyUpHandler(handler);
-  }
+    }
+
+    private void showFields(String solrUrl) {
+        solrService.getFields(solrUrl, new AsyncCallback<List<DismaxField>>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void onSuccess(List<DismaxField> dismaxFields) {
+                for (DismaxField dismaxField : dismaxFields) {
+                    DismaxFieldControl dismaxFieldControl = new DismaxFieldControl(dismaxField);
+                    fieldControls.add(dismaxFieldControl);
+                    System.out.println("created control for " + dismaxField.getFieldName());
+
+                    System.out.println("adding control");
+                    fieldsPanel.add(dismaxFieldControl);
+                }
+            }
+        });
+    }
+
+    private HorizontalPanel createSolrUrlPanel() {
+        HorizontalPanel solrUrlPanel = new HorizontalPanel();
+        solrUrlPanel.add(new Label("Root url of the solr server"));
+        solrServerUrlEntryField = new TextBox();
+        solrServerUrlEntryField.setTitle("Root url of the solr server");
+        solrUrlPanel.add(solrServerUrlEntryField);
+
+        Button connectButton = new Button("Connect");
+
+        connectButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+                showFields(solrServerUrlEntryField.getValue());
+            }
+        });
+
+        solrUrlPanel.add(connectButton);
+        return solrUrlPanel;
+    }
 }

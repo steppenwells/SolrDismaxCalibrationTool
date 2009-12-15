@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface SolrServiceAsync {
 
-    void getFields(AsyncCallback<List<DismaxField>> callback);
+    void getFields(String solrUrl, AsyncCallback<List<DismaxField>> callback);
 }

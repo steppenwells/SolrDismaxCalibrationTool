@@ -9,6 +9,6 @@ import java.util.List;
 @RemoteServiceRelativePath("dismaxsolrservice")
 public interface SolrService extends RemoteService {
 
-    List<DismaxField> getFields();
+    List<DismaxField> getFields(String solrUrl);
     
 }

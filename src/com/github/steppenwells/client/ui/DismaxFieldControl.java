@@ -3,7 +3,10 @@ package com.github.steppenwells.client.ui;
 import com.github.steppenwells.client.model.DismaxField;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
+
+import java.util.List;
 
 public class DismaxFieldControl extends Composite {
 
@@ -19,6 +22,7 @@ public class DismaxFieldControl extends Composite {
 
     private void initUi() {
         HorizontalPanel panel = new HorizontalPanel();
+
 
         enabledCheckbox = new CheckBox(dismaxField.getFieldName());
         enabledCheckbox.setEnabled(dismaxField.isInUse());
