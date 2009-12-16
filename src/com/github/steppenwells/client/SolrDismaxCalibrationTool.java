@@ -6,7 +6,6 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
 
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ public class SolrDismaxCalibrationTool implements EntryPoint {
     private final List<DismaxFieldControl> fieldControls = new ArrayList<DismaxFieldControl>();
 
     private VerticalPanel fieldsPanel;
-    private VerticalPanel graphPanel;
+    private VerticalPanel queryReportingPanel;
     private VerticalPanel resultsPanel;
 
     private final DismaxToolState dismaxToolState;
@@ -47,12 +46,12 @@ public class SolrDismaxCalibrationTool implements EntryPoint {
         toolLayoutPanel.add(solrUrlPanel);
 
         fieldsPanel = new VerticalPanel();
-        graphPanel = initQueryReportingPanel();
+        queryReportingPanel = initQueryReportingPanel();
         resultsPanel = new VerticalPanel();
 
         HorizontalPanel calibrationControls = new HorizontalPanel();
         calibrationControls.add(fieldsPanel);
-        calibrationControls.add(graphPanel);
+        calibrationControls.add(queryReportingPanel);
         toolLayoutPanel.add(calibrationControls);
 
         toolLayoutPanel.add(resultsPanel);

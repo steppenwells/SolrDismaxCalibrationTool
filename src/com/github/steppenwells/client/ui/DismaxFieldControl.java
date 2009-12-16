@@ -24,7 +24,7 @@ public class DismaxFieldControl extends Composite {
         HorizontalPanel panel = new HorizontalPanel();
 
         enabledCheckbox = new CheckBox(dismaxField.getFieldName());
-        enabledCheckbox.setEnabled(dismaxField.isInUse());
+        enabledCheckbox.setValue(dismaxField.isInUse());
         enabledCheckbox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> booleanValueChangeEvent) {
