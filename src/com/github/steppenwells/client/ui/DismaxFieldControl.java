@@ -1,28 +1,27 @@
 package com.github.steppenwells.client.ui;
 
+import com.github.steppenwells.client.DismaxToolState;
 import com.github.steppenwells.client.model.DismaxField;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
-
-import java.util.List;
 
 public class DismaxFieldControl extends Composite {
 
-    private DismaxField dismaxField;
+    private final DismaxField dismaxField;
+    private final DismaxToolState dismaxToolState;
 
     private CheckBox enabledCheckbox;
     private TextBox weightTextBox;
 
-    public DismaxFieldControl(DismaxField dismaxField) {
+    public DismaxFieldControl(DismaxField dismaxField, DismaxToolState dismaxToolState) {
         this.dismaxField = dismaxField;
+        this.dismaxToolState = dismaxToolState;
         initUi();
     }
 
     private void initUi() {
         HorizontalPanel panel = new HorizontalPanel();
-
 
         enabledCheckbox = new CheckBox(dismaxField.getFieldName());
         enabledCheckbox.setEnabled(dismaxField.isInUse());
@@ -30,6 +29,7 @@ public class DismaxFieldControl extends Composite {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> booleanValueChangeEvent) {
                 dismaxField.setInUse(booleanValueChangeEvent.getValue());
+                dismaxToolState.weightingsChanged();
             }
         });
         panel.add(enabledCheckbox);
@@ -44,6 +44,7 @@ public class DismaxFieldControl extends Composite {
                 try {
                     double weight = Double.parseDouble(weightString);
                     dismaxField.setWeight(weight);
+                    dismaxToolState.weightingsChanged();
                 } catch (NumberFormatException nfe) {
                     //TODO put error label here.
                 }

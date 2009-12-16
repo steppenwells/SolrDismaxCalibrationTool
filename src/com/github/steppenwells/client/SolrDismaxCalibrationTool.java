@@ -6,9 +6,6 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
 
@@ -19,13 +16,6 @@ import java.util.List;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class SolrDismaxCalibrationTool implements EntryPoint {
-    /**
-     * The message displayed to the user when the server cannot be reached or
-     * returns an error.
-     */
-    private static final String SERVER_ERROR = "An error occurred while "
-            + "attempting to contact the server. Please check your network "
-            + "connection and try again.";
 
     /**
      * Create a remote service proxy to talk to the server-side Greeting service.
@@ -39,6 +29,13 @@ public class SolrDismaxCalibrationTool implements EntryPoint {
     private VerticalPanel graphPanel;
     private VerticalPanel resultsPanel;
 
+    private final DismaxToolState dismaxToolState;
+    private Label queryDisplayLabel;
+
+    public SolrDismaxCalibrationTool() {
+        dismaxToolState = new DismaxToolState(this, solrService);
+    }
+
     /**
      * This is the entry point method.
      */
@@ -50,7 +47,7 @@ public class SolrDismaxCalibrationTool implements EntryPoint {
         toolLayoutPanel.add(solrUrlPanel);
 
         fieldsPanel = new VerticalPanel();
-        graphPanel = new VerticalPanel();
+        graphPanel = initQueryReportingPanel();
         resultsPanel = new VerticalPanel();
 
         HorizontalPanel calibrationControls = new HorizontalPanel();
@@ -159,25 +156,29 @@ public class SolrDismaxCalibrationTool implements EntryPoint {
 //    nameField.addKeyUpHandler(handler);
     }
 
+    private VerticalPanel initQueryReportingPanel() {
+        VerticalPanel panel = new VerticalPanel();
+
+        this.queryDisplayLabel = new Label();
+        panel.add(queryDisplayLabel);
+
+        return panel;
+    }
+
     private void showFields(String solrUrl) {
-        solrService.getFields(solrUrl, new AsyncCallback<List<DismaxField>>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
+        dismaxToolState.getFieldsFor(solrUrl);
 
-            @Override
-            public void onSuccess(List<DismaxField> dismaxFields) {
-                for (DismaxField dismaxField : dismaxFields) {
-                    DismaxFieldControl dismaxFieldControl = new DismaxFieldControl(dismaxField);
-                    fieldControls.add(dismaxFieldControl);
-                    System.out.println("created control for " + dismaxField.getFieldName());
+        for (DismaxFieldControl fieldControl : fieldControls) {
+            fieldsPanel.remove(fieldControl);
+        }
+        fieldControls.clear();
 
-                    System.out.println("adding control");
-                    fieldsPanel.add(dismaxFieldControl);
-                }
-            }
-        });
+        for (DismaxField dismaxField : dismaxToolState.getFields()) {
+            DismaxFieldControl dismaxFieldControl = new DismaxFieldControl(dismaxField, dismaxToolState);
+            fieldControls.add(dismaxFieldControl);
+            fieldsPanel.add(dismaxFieldControl);
+        }
+
     }
 
     private HorizontalPanel createSolrUrlPanel() {
@@ -198,5 +199,13 @@ public class SolrDismaxCalibrationTool implements EntryPoint {
 
         solrUrlPanel.add(connectButton);
         return solrUrlPanel;
+    }
+
+    public List<DismaxFieldControl> getFieldControls() {
+        return fieldControls;
+    }
+
+    public void displayQueryString() {
+        queryDisplayLabel.setText(dismaxToolState.getDismaxQueryString());
     }
 }
