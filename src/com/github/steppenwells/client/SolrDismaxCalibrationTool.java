@@ -1,6 +1,7 @@
 package com.github.steppenwells.client;
 
 import com.github.steppenwells.client.model.DismaxField;
+import com.github.steppenwells.client.model.SolrSearchResult;
 import com.github.steppenwells.client.ui.DismaxFieldControl;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -23,6 +24,9 @@ public class SolrDismaxCalibrationTool implements EntryPoint {
 
     private TextBox solrServerUrlEntryField;
     private final List<DismaxFieldControl> fieldControls = new ArrayList<DismaxFieldControl>();
+    private TextBox queryStringEntryField;
+    //TODO temp result display solution
+    private Label resultsDisplayLabel;
 
     private VerticalPanel fieldsPanel;
     private VerticalPanel queryReportingPanel;
@@ -47,7 +51,7 @@ public class SolrDismaxCalibrationTool implements EntryPoint {
 
         fieldsPanel = new VerticalPanel();
         queryReportingPanel = initQueryReportingPanel();
-        resultsPanel = new VerticalPanel();
+        resultsPanel = initResultsPanel();
 
         HorizontalPanel calibrationControls = new HorizontalPanel();
         calibrationControls.add(fieldsPanel);
@@ -155,11 +159,23 @@ public class SolrDismaxCalibrationTool implements EntryPoint {
 //    nameField.addKeyUpHandler(handler);
     }
 
+    private VerticalPanel initResultsPanel() {
+        resultsDisplayLabel = new Label();
+        VerticalPanel panel = new VerticalPanel();
+        panel.add(resultsDisplayLabel);
+
+        return panel;
+    }
+
     private VerticalPanel initQueryReportingPanel() {
         VerticalPanel panel = new VerticalPanel();
 
         this.queryDisplayLabel = new Label();
         panel.add(queryDisplayLabel);
+
+        panel.add(new Label("search for:"));
+        this.queryStringEntryField = new TextBox();
+        panel.add(queryStringEntryField);
 
         return panel;
     }
@@ -204,7 +220,19 @@ public class SolrDismaxCalibrationTool implements EntryPoint {
         return fieldControls;
     }
 
-    public void displayQueryString() {
-        queryDisplayLabel.setText(dismaxToolState.getDismaxQueryString());
+    public TextBox getSolrServerUrlEntryField() {
+        return solrServerUrlEntryField;
+    }
+
+    public void displayQueryString(String dismaxQueryString) {
+        queryDisplayLabel.setText(dismaxQueryString);
+    }
+
+    public void displayResults(List<SolrSearchResult> results) {
+        resultsDisplayLabel.setText(results.toString());
+    }
+
+    public String getQueryString() {
+        return queryStringEntryField.getValue();
     }
 }
