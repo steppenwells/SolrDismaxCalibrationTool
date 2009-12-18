@@ -11,6 +11,7 @@ import org.apache.solr.common.SolrDocument;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SolrServiceImpl extends RemoteServiceServlet implements SolrService {
 
@@ -37,17 +38,24 @@ public class SolrServiceImpl extends RemoteServiceServlet implements SolrService
             SolrQuery query = new SolrQuery();
             query.setParam("defType", "dismax");
             query.setParam("qf", dismaxQueryString);
+
+            query.setHighlight(true);
+            query.setHighlightRequireFieldMatch(true);
+
             query.setQuery(queryString);
 
             QueryResponse queryResponse = solrServer.query(query);
 
             List<SolrSearchResult> resultList = new ArrayList<SolrSearchResult>();
 
-            for(SolrDocument solrDocument : queryResponse.getResults()) {
+            Map<String, Map<String,List<String>>> highlightResults = queryResponse.getHighlighting();
+            for (String highlightKey : highlightResults.keySet()) {
                 SolrSearchResult result = new SolrSearchResult();
+                result.put("highlight key", highlightKey);
 
-                for(String fieldName : solrDocument.getFieldNames()) {
-                    result.put(fieldName, solrDocument.getFieldValue(fieldName).toString());    
+                Map<String, List<String>> highlightFields = highlightResults.get(highlightKey);
+                for(String fieldKey : highlightFields.keySet()) {
+                    result.put(fieldKey, highlightFields.get(fieldKey));
                 }
 
                 resultList.add(result);
