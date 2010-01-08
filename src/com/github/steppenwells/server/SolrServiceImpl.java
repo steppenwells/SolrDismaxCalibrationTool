@@ -51,7 +51,7 @@ public class SolrServiceImpl extends RemoteServiceServlet implements SolrService
             Map<String, Map<String,List<String>>> highlightResults = queryResponse.getHighlighting();
             for (String highlightKey : highlightResults.keySet()) {
                 SolrSearchResult result = new SolrSearchResult();
-                result.put("highlight key", highlightKey);
+                result.put("id", highlightKey);
 
                 Map<String, List<String>> highlightFields = highlightResults.get(highlightKey);
                 for(String fieldKey : highlightFields.keySet()) {
